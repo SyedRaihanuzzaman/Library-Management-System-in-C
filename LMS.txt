@@ -1,0 +1,525 @@
+//headefiles                *********************************************************************************
+#include<windows.h>
+#include<stdio.h>
+#include<stdlib.h>                  // for exit library function
+#include<conio.h>
+#include<string.h>                  //contains strcmp(),strcpy(),strlen(),etc
+#include<ctype.h>                   //contains toupper(), tolower(),etc
+#include<time.h>                    //show time ..
+
+
+
+//functions                   *********************************************************************************
+void password(void);   //checking password valied or invalied
+void menu(void);        //first page
+void mainmenustudent(void); //student menu
+void mainmenuadmin(void);  //admin menu
+void addbooks(void);       // function for adding books by admine
+void deletebooks(void);    //function for deleting books by admin
+void searchbooks(void);     // for search books by students
+void booklist(void);        //
+void issuebooks(void);
+void searchforissue(void);
+void showissuebooks(void);
+void editbook(void);
+int checkid(int t);
+int getdata();
+void t(void); //show present time
+void L(void); //loading function
+void closing(void); // FUNCTION FOR Exiting
+
+
+//global variables             ##############################################################################
+int i;
+char PASSWORD[20]="123";
+
+// global structure            @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@22222222
+struct books
+{
+    int id;
+    char name[30];
+    //float price;
+    int quantity;
+} a;
+
+
+struct issuebooks
+{
+    char name[30];
+    char id[10];
+    char bname[30];
+    char date[20];
+} issu;
+
+
+
+//global files                 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+FILE *fp; //add books
+FILE *is;  //issued book
+
+
+/*                                                                     ########################################
+                            START THE MAIN CODE FROME HERE             @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+```````````````````````````````````````````````````````````````````````````````````````````````````````````````
+*/
+
+int main()                                      /*  Main Function  */
+{
+    L();
+    menu();
+    return 0;
+}
+
+void menu(void)                                /*   WELCOME     PART */
+{
+    system("cls");
+    t();
+    i=0;
+    char wlcm[]="WELCOME To DIU LIBRARY";
+    char wlcm3[]="Are you Admin or Student?";
+    char wlcm2[]="Student->press 'S' // Admin->press 'A' : ";
+    printf("\n\n\t\xDB\xDB\xDB\xB2");
+
+    while(wlcm[i]!='\0')
+    {
+        Sleep(10);
+        printf("%c",wlcm[i]);
+        i++;
+    }
+
+    printf("\xB2\xDB\xDB\xDB\n\n\n\t");
+
+    i=0;
+    while(wlcm3[i]!='\0')
+    {
+        Sleep(10);
+        printf("%c",wlcm3[i]);
+        i++;
+    }
+    printf("\n\t");
+    i=0;
+    while(wlcm2[i]!='\0')
+    {
+        Sleep(10);
+        printf("%c",wlcm2[i]);
+        i++;
+    }
+    char a=toupper(getch());
+    if(a=='A')
+        password();
+
+
+    else if(a=='S')
+        mainmenustudent();
+
+    else
+    {
+        system("cls");
+        puts("\tInvalied !! Press \n Press any key For again\n");
+        getch();
+        L();
+        menu();
+    }
+}
+//***********************************************************************************
+
+void password(void)    //                               function for checking password
+{
+    system("cls");
+
+    char cm[]="Password Protected";
+    printf("\n\n\t\xDB\xDB\xDB\xB2");
+    i=0;
+    while(cm[i]!='\0')
+    {
+        Sleep(10);
+        printf("%c",cm[i]);
+        i++;
+    }
+    printf("\xB2\xDB\xDB\xDB");
+    i=0;
+    char ch,pass[20];
+    printf("\n\tEnter Password: ");
+
+    while(ch!=13 && ch!=8)
+    {
+        ch=getch();
+
+        if(ch!=13 && ch!=8)
+        {
+            putch('*');
+            pass[i] = ch;
+            i++;
+        }
+    }
+    pass[i]='\0';
+
+    if(strcmp(pass,PASSWORD)==0)
+    {
+        system("cls");
+        puts("\n\tPassword Match\n\tPress any key to continue\n");
+        getch();
+        mainmenuadmin();
+    }
+
+    else
+    {
+        system("cls");
+
+        puts("\n\a\tWarning!! Incorrect Password");
+        getch();
+        password();
+    }
+}
+//**********************************************************************************
+
+void mainmenustudent(void)                                    /*   STUDENT MENU   */
+{
+    system("cls");
+
+    printf("\n\n\t\xDB\xDB\xDB\xDB\xDB\xB2\xB2\xB2\xB2 Student Menu \xB2\xB2\xB2\xB2\xDB\xDB\xDB\xDB\xDB\n");
+    puts("\n\t\xDB\xDB\xDB\xDB\xDB\xB2 1.Search Books \n\t\xDB\xDB\xDB\xDB\xDB\xB2 2.Booklist\n\t\
+\xDB\xDB\xDB\xDB\xDB\xB2 3.Issue Books\n\t\xDB\xDB\xDB\xDB\xDB\xB2 4.Close Application\n\t\xDB\xDB\xDB\xDB\xDB\xB2 5.Menu \n\t");
+    char a=getch();
+    if(a=='1')
+        searchbooks();
+
+    else if(a=='2')
+        booklist();
+
+    else if(a=='3')
+        issuebooks();
+
+    else if(a=='4')
+    {
+        system("cls");
+        closing();
+    }
+
+    else if(a=='5')
+        menu();
+
+    else
+    {
+        system("cls");
+        puts("\aWrong Entry!! Try again");
+        getch();
+        mainmenustudent();
+    }
+}
+
+/* MENU FOR ADMIN  */                          //**********************************************************************
+void mainmenuadmin(void)
+{
+    system("cls");
+    printf("\n\n\t\xDB\xDB\xDB\xDB\xDB\xB2\xB2\xB2\xB2 Admine Menu \xB2\xB2\xB2\xB2\xDB\xDB\xDB\xDB\xDB\n");
+    puts("\n\t\xDB\xDB\xDB\xDB\xDB\xB2 1.Show issued books \n\t\xDB\xDB\xDB\xDB\xDB\xB2 2.Add Books\n\t\xDB\xDB\xDB\xDB\xDB\xB2 3.Delete Books\n\t\
+\xDB\xDB\xDB\xDB\xDB\xB2 4.Edit Books Record \n\t\xDB\xDB\xDB\xDB\xDB\xB2 5.Close Application\n\t\xDB\xDB\xDB\
+\xDB\xDB\xB2 6.Menu \n\t");
+    char a=getch();
+    if (a=='1')
+        showissuebooks();
+    else if(a=='2')
+        addbooks();
+
+    else if(a=='3')
+        deletebooks();
+
+    else if(a=='4')
+        editbook();
+
+    else if(a=='5')
+    {
+        system("cls");
+        closing();
+    }
+
+    else if(a=='6')
+        menu();
+    else
+    {
+        system("cls");
+        puts("\aInvalied press!! Try again");
+        getch();
+        mainmenuadmin();
+    }
+}
+
+void addbooks(void)                         /*    funtion that add books   */
+{
+    system("cls");
+    int i;
+    fp=fopen("LibraryData.text","ab+");   //open the file
+    if(getdata()==1)          // go to the get data function
+    {
+        fseek(fp,0,SEEK_END);
+        fwrite(&a,sizeof(a),1,fp);  // save the all data of books in file
+        fclose(fp);     //close the file
+        printf("The record is sucessfully saved");
+        printf("Save any more?(Y / N):");
+        if(getch()=='n')
+            mainmenuadmin();
+        else
+            addbooks();
+    }
+}
+
+
+void deletebooks()
+{
+    system("cls");
+
+    puts("Not done,, \t\tSORRY EVERYONE\n");
+    // NOT complete... but tried hard.
+}
+                                    /*  Searching the book */
+
+void searchbooks()
+{
+    system("cls");
+    char d[30];
+    char f='o';
+    printf("*****************************Search Books*********************************");
+    fp=fopen("LibraryData.text","r+");      //open the file
+    rewind(fp);   //move pointer at the begining of file
+    system("cls");
+    printf("****Search Books By Name****");
+    printf("Enter the books name :");
+    scanf("%s",&d);
+    printf("Searching........\n\n");
+    while(fread(&a,sizeof(a),1,fp))     // read the file
+    {
+        if(strcmp(a.name,d)==0)
+        {
+            printf("\t The Book is available\n");
+            printf("\t ID:%d\n",a.id);
+            printf("\t Name:%s\n",a.name);
+            printf("\t Qantity:%d \n",a.quantity);
+            //printf("\t Price:TK.%.2f\n\n",a.price);
+            f='t';
+        }
+    }
+    fclose(fp);
+    if(f!='t')
+    {
+        printf("\aNo Record Found");
+    }
+    printf("Try another search?(Y/N)");
+    if(getch()=='y')
+        searchbooks();
+    else
+        mainmenustudent();
+}
+
+
+void booklist()
+{
+    system("cls");
+    int i=0,j;
+    printf("*********************************Book List*****************************\n\n\n");
+    printf("ID\t\tBOOK NAME\t[\tQTY\t]\n");
+
+    fp=fopen("LibraryData.text","r");
+
+    while(fread(&a,sizeof(a),1,fp))
+    {
+        printf("%d\t\t",a.id);
+        printf("%s\t\t",a.name);
+        printf("%d\n",a.quantity);
+        //printf("%.2f\n",a.price);
+    }
+
+    fclose(fp);
+    getch();
+    mainmenustudent();
+}
+
+
+void showissuebooks()
+{
+    system("cls");
+    printf("*********************************Issued Book List*****************************\n\n\n");
+    is=fopen("Issuebook.text","r+");
+    i=0;
+    printf("Student_Name\t Roll_No.\t Book_Name\t Issue_Date\n\n");
+    while(fread(&issu,sizeof(issu),1,is))
+    {
+        i++;
+        printf("[%d].",i);
+        printf("%s \t",issu.name);
+        printf("%s \t\t",issu.id);
+        printf("%s\t\t",issu.bname);
+        printf("%s\n",issu.date);
+    }
+    fclose(is);
+    i=0;
+    getch();
+    mainmenuadmin();
+}
+
+void issuebooks()
+{
+    system("cls");
+
+
+    searchforissue();
+    is=fopen("Issuebook.text","a+");
+    fseek(is,0,SEEK_END);
+
+    printf("Students Name :\t");
+    scanf("%s",issu.name);
+    printf("Enter Roll number :");
+    scanf("%s",issu.id);
+    printf("Type The Book Name : ");
+    scanf("%s",issu.bname);
+    printf("Write present Date (dd-mm-yy): ");
+    scanf("%s",issu.date);
+
+    fwrite(&issu,sizeof(issu),1,is);
+    fclose(is);
+    getch();
+        mainmenustudent();
+}
+
+void searchforissue()
+{
+    system("cls");
+    char f='f',d[30];
+    printf("*****LIBRARY POLICY*****\n\n [1] You can issue only one book\n [2] You must back this book in 1 week \n\n\t\tPRESS ENTER\n");
+    getch();
+
+    fp=fopen("LibraryData.text","r+");
+    rewind(fp);   //move pointer at the begining of file
+    system("cls");
+    printf("****Search Books By Name For Issue ****\n");
+    printf("Enter the books name :");
+    scanf("%s",&d);
+    printf("Searching........\n\n");
+    while(fread(&a,sizeof(a),1,fp))     //read the file (A-Z)
+    {
+        if(strcmp(a.name,d)==0)         // strcmp,, searching the book
+        {
+            printf("\t The Book is available\n");
+            printf("\t ID:%d\n",a.id);
+            printf("\t Name:%s\n",a.name);
+            //printf("\t Price:TK.%.2f\n\n",a.price);
+            f='t';
+        }
+    }
+    fclose(fp);
+    if(f!='t')
+    {
+        printf("\aNo Record Found");
+        getch();
+        mainmenustudent();
+    }
+}
+
+void editbook(void)
+{
+    system("cls");
+    int c=0;
+    int d,e;
+
+    printf("\t\t****Edit Books Section****\n\n\n");
+    char another='y';
+    while(toupper(another)=='y')
+    {
+        printf("Enter Book Id to be edited:\n");
+        scanf("%d",&d);
+        fp=fopen("LibraryData.text","r+");
+        while(fread(&a,sizeof(a),1,fp))
+        {
+            if(checkid(d)==0)
+            {
+                printf("The book is availble\n\n");
+                printf("The Book ID:%d",a.id);
+                printf("Enter new name:\n");
+                scanf("%s",&a.name);
+                printf("Enter new quantity:\n");
+                scanf("%d",&a.quantity);
+                //printf("Enter new price:\n");
+                //scanf("%f",&a.price);
+                printf("The record is modified\n");
+                fseek(fp,ftell(fp)-sizeof(a),0);
+                fwrite(&a,sizeof(a),1,fp);
+                fclose(fp);
+                c=1;
+            }
+            if(c==0)
+            {
+                printf("No record found");
+            }
+        }
+        printf("Modify another Record?(Y/N)");
+        another=getch() ;
+    }
+
+}
+
+//extre *******************************************************************************************************************
+void t(void) //for time
+{
+    time_t t;
+    time(&t);
+    printf("\n\t\xDB\xB2 Date and time \xDB\xDB\xDB %s \n",ctime(&t));
+    puts("\tMade by I to We Programmers\n");
+}
+
+void L()  //for loading
+{
+    int loader;
+    system("cls");
+    printf("LOADING........");
+    printf("\n\n");
+    for(loader=1; loader<50; loader++)
+    {
+        Sleep(10);
+        printf("%c",220);
+    }
+}
+
+int getdata()
+{
+    int t;
+    printf("Enter the Information Below");
+    printf("Book ID: ");
+    scanf("%d",&t);
+    if(checkid(t) == 0)
+    {
+        printf("\aThe book id already exists\a");
+        getch();
+        menu();
+        return 0;
+    }
+    a.id=t;
+    printf("Book Name: ");
+    scanf("%s",a.name);
+    printf("Quantity: ");
+    scanf("%d",&a.quantity);
+    //printf("Price:");
+    //scanf("%f",&a.price);
+    return 1;
+}
+
+int checkid(int t)  //check whether the book is exist in library or not
+{
+    rewind(fp);
+    while(fread(&a,sizeof(a),1,fp))
+        if(a.id==t)
+            return 0;  //returns 0 if book exits
+    return 1;          //return 1 if it not
+}
+
+/*  function for exiting */                     //*************************************************
+void closing(void)
+{
+    printf("\n\t ***************************    Library Management System     ***************************");
+    printf("\n\t ***************************    Mini Project in C             ***************************");
+    printf("\n\t ***************************    is brought to you by          ***************************");
+    printf("\n\t ***************************    Code with I to We Programmers ***************************");
+
+    printf("\n\tExiting in 3 second...........>");
+    Sleep(3000);
+    exit(0);
+}
